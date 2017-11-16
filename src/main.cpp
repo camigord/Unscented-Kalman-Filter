@@ -61,6 +61,8 @@ int main(int argc, char* argv[])
   out_file_ << "py_ground_truth" << "\t";
   out_file_ << "vx_ground_truth" << "\t";
   out_file_ << "vy_ground_truth" << "\t";
+  out_file_ << "yaw_ground_truth" << "\t";
+  out_file_ << "yaw_rate_ground_truth" << "\t";
   out_file_ << "rmse_x" << "\t";
   out_file_ << "rmse_y" << "\t";
   out_file_ << "rmse_vx" << "\t";
@@ -127,10 +129,14 @@ int main(int argc, char* argv[])
     	  float y_gt;
     	  float vx_gt;
     	  float vy_gt;
+        float yaw_gt;
+    	  float yaw_dot_gt;
     	  iss >> x_gt;
     	  iss >> y_gt;
     	  iss >> vx_gt;
     	  iss >> vy_gt;
+        iss >> yaw_gt;
+        iss >> yaw_dot_gt;
     	  VectorXd gt_values(4);
     	  gt_values(0) = x_gt;
     	  gt_values(1) = y_gt;
@@ -182,6 +188,8 @@ int main(int argc, char* argv[])
         out_file_ << gt_values(1) << "\t";
         out_file_ << gt_values(2) << "\t";
         out_file_ << gt_values(3) << "\t";
+        out_file_ << yaw_gt << "\t";
+        out_file_ << yaw_dot_gt << "\t";
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
     	  VectorXd estimate(4);
