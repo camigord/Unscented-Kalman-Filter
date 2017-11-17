@@ -1,44 +1,21 @@
 # Unscented Kalman Filter Project Starter Code
 Self-Driving Car Engineer Nanodegree Program
 
-In this project utilize an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
+<img src="./assets/video.gif?raw=true" width="500">
 
-This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases)
+Implementing an Unscented Kalman filter to estimate the state of a moving object with noisy LiDAR and radar measurements. The project employs the simulation environment provided by UDACITY which can be downloaded from [here](https://github.com/udacity/self-driving-car-sim/releases).
 
-This repository includes two files that can be used to set up and intall [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see [this concept in the classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77) for the required version and installation scripts.
+
+This repository includes two files that can be used to set up and intall [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO.
 
 Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
 
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./UnscentedKF
+1. cd build
+2. cmake ..
+3. make
+4. ./UnscentedKF output_file_name.txt
 
-Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
-
-Note that the programs that need to be written to accomplish the project are src/ukf.cpp, src/ukf.h, tools.cpp, and tools.h
-
-The program main.cpp has already been filled out, but feel free to modify it.
-
-Here is the main protcol that main.cpp uses for uWebSocketIO in communicating with the simulator.
-
-
-INPUT: values provided by the simulator to the c++ program
-
-["sensor_measurement"] => the measurment that the simulator observed (either lidar or radar)
-
-
-OUTPUT: values provided by the c++ program to the simulator
-
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
-["rmse_x"]
-["rmse_y"]
-["rmse_vx"]
-["rmse_vy"]
-
----
+_NOTE: The script will save all the data in the provided output file in order to analyze the results and generate the figures below. The files [Tuning_NIS.ipynb](./Tuning_NIS.ipynb) and [Visualizing.ipynb](./Visualizing.ipynb) can be used to visualize the filter performance and interact with the figures._
 
 ## Other Important Dependencies
 * cmake >= 3.5
@@ -52,41 +29,84 @@ OUTPUT: values provided by the c++ program to the simulator
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
 
-## Basic Build Instructions
+## Tuning process noise
 
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./UnscentedKF` Previous versions use i/o from text files.  The current state uses i/o
-from the simulator.
+It was important to tune the _process noise_ parameters (_std_a_ & _std_yawdd_) in order to get the filter working properly. NIS (_Normalized Innovation Squared_) was used to analyze the results and adjust the noise estimates. The main idea is that only around 5% of the NIS values computed after receiving each sensor measurement should be above the 95% confidence line presented in the figures below. Having few points above the line indicate that we may be overestimating the uncertainty in the process, while having too many values indicate the opposite.
 
-## Editor Settings
+<table>
+  <tr>
+    <td align="center">Overestimating uncertainty</td>
+    <td align="center">Underestimating uncertainty</td>
+    <td align="center">Tuning noise parameters</td>
+  </tr>
+  <tr>
+    <td>&sigma;<sub>longitudinal acceleration</sub> = 30       m/s<sup>2</sup> &sigma;<sub>yaw acceleration</sub> = 30 rad/s<sup>2</sup></td>
+    <td>&sigma;<sub>longitudinal acceleration</sub> = 0.1       m/s<sup>2</sup> &sigma;<sub>yaw acceleration</sub> = 0.1 rad/s<sup>2</sup></td>
+    <td>&sigma;<sub>longitudinal acceleration</sub> = 1       m/s<sup>2</sup> &sigma;<sub>yaw acceleration</sub> = 0.8 rad/s<sup>2</sup></td>
+  </tr>
+  <tr>
+    <td><img src="./assets/overestimate.png" width="800"></td>
+    <td><img src="./assets/underestimate.png" width="800"></td>
+    <td><img src="./assets/tuning.png" width="800"></td>
+  </tr>
+</table>
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+## RMSE results before and after tuning
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+<table>
+  <tr>
+    <td align="center">Name</td>
+    <td align="center">RMSE X</td>
+    <td align="center">RMSE Y</td>
+    <td align="center">RMSE Vx</td>
+    <td align="center">RMSE Vy</td>
+  </tr>
+  <tr>
+    <td>Overestimating noise</td>
+    <td>0.094</td>
+    <td>0.120</td>
+    <td>0.861</td>
+    <td>0.942</td>
+  </tr>
+  <tr>
+    <td>Underestimating noise</td>
+    <td>0.126</td>
+    <td>0.130</td>
+    <td>0.432</td>
+    <td>0.303</td>
+  </tr>
+  <tr>
+    <td><b>Tuning noise parameters</b></td>
+    <td><b>0.064</b></td>
+    <td><b>0.083</b></td>
+    <td><b>0.333</b></td>
+    <td><b>0.238</b></td>
+  </tr>
+</table>
 
-## Code Style
+## Comparing UKF to EKF
 
-Please stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) as much as possible.
+We can also compare the performance of the UKF with our previous EKF [project](https://github.com/camigord/Extended_Kalman_Filter). The figure below shows that UKF performs significantly better than the EKF, although it is important to clarify that we did not tune the EKF parameters.
 
-## Generating Additional Data
+<img src="./assets/ukf_vs_ekf.png" width="700">
 
-This is optional!
+## UKF performance
 
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
+Here we can compare the UKF estimates to the ground truth provided by the simulator.
 
-## Project Instructions and Rubric
+<table>
+  <tr>
+    <td><img src="./assets/ukf_position.png" width="700"></td>
+    <td><img src="./assets/ukf_velocity.png" width="700"></td>
+  </tr>
+  <tr>
+    <td><img src="./assets/ukf_yaw.png" width="700"></td>
+    <td><img src="./assets/ukf_yaw_rate.png" width="700"></td>
+  </tr>
+</table>
 
-This information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/c3eb3583-17b2-4d83-abf7-d852ae1b9fff/concepts/f437b8b0-f2d8-43b0-9662-72ac4e4029c1)
-for instructions and the project rubric.
+## Which sensor is better?
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+It is hard to say if one sensor in particular is better than the other provided the results below. Radar measurements seem to generate smooth estimates, but LiDAR measurements follow the ground truth more closely (specially during curves). We can conclude, however, that fusing the measurements from both sensors results in more accurate estimates.
 
+<img src="./assets/sensors_position.png" width="700">
