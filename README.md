@@ -40,9 +40,9 @@ It was important to tune the _process noise_ parameters (_std_a_ & _std_yawdd_) 
     <td align="center">Tuning noise parameters</td>
   </tr>
   <tr>
-    <td>&sigma;<sub>longitudinal acceleration</sub> = 30       m/s<sup>2</sup> &sigma;<sub>yaw acceleration</sub> = 30 rad/s<sup>2</sup></td>
-    <td>&sigma;<sub>longitudinal acceleration</sub> = 0.1       m/s<sup>2</sup> &sigma;<sub>yaw acceleration</sub> = 0.1 rad/s<sup>2</sup></td>
-    <td>&sigma;<sub>longitudinal acceleration</sub> = 1       m/s<sup>2</sup> &sigma;<sub>yaw acceleration</sub> = 0.8 rad/s<sup>2</sup></td>
+    <td>&sigma;<sub>longitudinal acceleration</sub> = 30 m/s<sup>2</sup> <BR> &sigma;<sub>yaw acceleration</sub> = 30 rad/s<sup>2</sup></td>
+    <td>&sigma;<sub>longitudinal acceleration</sub> = 0.1 m/s<sup>2</sup> <BR> &sigma;<sub>yaw acceleration</sub> = 0.1 rad/s<sup>2</sup></td>
+    <td>&sigma;<sub>longitudinal acceleration</sub> = 1 m/s<sup>2</sup> <BR> &sigma;<sub>yaw acceleration</sub> = 0.8 rad/s<sup>2</sup></td>
   </tr>
   <tr>
     <td><img src="./assets/overestimate.png" width="800"></td>
