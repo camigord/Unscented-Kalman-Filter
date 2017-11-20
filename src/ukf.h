@@ -73,6 +73,12 @@ public:
   ///* the current NIS for laser
   double NIS_laser_;
 
+  MatrixXd R_laser;
+  MatrixXd R_radar;
+
+  MatrixXd H_laser_;
+
+
   /**
    * Constructor
    */
@@ -88,6 +94,8 @@ public:
    * @param meas_package The latest measurement data of either radar or laser
    */
   void ProcessMeasurement(MeasurementPackage meas_package);
+
+  void NormalizeAngle(double& angle);
 
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
@@ -108,7 +116,6 @@ public:
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
-  void Update(MeasurementPackage meas_package, MatrixXd Zsig, MatrixXd R, int n_z);
 };
 
 #endif /* UKF_H */
